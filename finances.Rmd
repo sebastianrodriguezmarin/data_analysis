@@ -1,0 +1,220 @@
+---
+title: "Finances"
+author: "Sebastián Rodríguez Marín"
+date: "04/12/2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r librerías, message=FALSE, warning=FALSE,echo=FALSE}
+library(AER)
+library(skimr)
+library(car)
+library(moments)
+library(lmtest)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+library(httr)
+library(PerformanceAnalytics)
+library(corrplot)
+library(quantmod)
+library(tseries)
+library(fImport)
+
+
+options(scipen = 990)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+getSymbols("EURUSD=X",quote="Close",from ="2019-01-01",periodicity = "daily")
+getSymbols("GBPUSD=X",quote="Close",from ="2019-01-01",periodicity = "daily")
+getSymbols("EURGBP=X",quote="Close",from ="2019-01-01",periodicity = "daily")
+getSymbols("USDNOK=X",quote="Close",from ="2019-01-01",periodicity = "daily")
+getSymbols("USDSEK=X",quote="Close",from ="2019-01-01",periodicity = "daily")
+getSymbols("BTC-USD",quote="Close",from ="2019-01-01",periodicity = "daily")
+getSymbols("ETH-USD",quote="Close",from ="2019-01-01",periodicity = "daily")
+getSymbols("LTC-USD",quote="Close",from ="2019-01-01",periodicity = "daily")
+getSymbols("AAVE-USD",quote="Close",from ="2019-01-10",periodicity = "daily")
+getSymbols(Symbols = 'FEDFUNDS',  src = "FRED", adjust=TRUE)
+
+
+eurusd<- `EURUSD=X`[,4]
+gbpusd<- `GBPUSD=X`[,4]
+eurgbp<- `EURGBP=X`[,4]
+usdnok<- `USDNOK=X`[,4]
+bitcoin<- `BTC-USD`[,4]
+ethereum<- `ETH-USD`[,4]
+litecoin <- `LTC-USD`[,4]
+AAVE <- `AAVE-USD`[,4]
+```
+
+```{r }
+view(`BTC-USD`)
+```
+```{r}
+#1. mfrow : Los ordena por filas
+
+plot(bitcoin,type="l")
+
+plot(ethereum,type="l")
+
+plot(litecoin,type="l")
+
+````
+```{r}
+# Usamos la siguiente función 
+
+# Una fila, dos columnas = 2 gráficos
+
+par(mfrow = c(1, 2))
+
+plot(bitcoin,type="l")
+
+plot(ethereum,type="l")
+
+````
+
+
+
+```{r}
+# volvemos a poner el grafico normal
+
+par(mfrow = c(1, 1))
+
+plot(bitcoin,type="l")
+
+plot(litecoin,type="l")
+
+
+# Dos filas, dos columnas
+
+par(mfrow = c(2, 2))
+
+plot(bitcoin,type="l")
+
+plot(ethereum,type="l")
+
+plot(litecoin,type="l")
+
+plot(eurusd,type="l")
+
+
+par(mfrow = c(1, 1))
+
+# mfcol -- por columna
+
+hist_bitcoin<-hist(bitcoin)
+
+r_bit<- returns(bitcoin)
+
+hist_ret_bitcoin<-hist(r_bit)
+
+par(mfcol = c(2, 2))
+
+plot(bitcoin,type="l")
+
+plot(hist_bitcoin)
+
+plot(r_bit,main = "Ret_Bitcoin",type="l")
+
+plot(hist_ret_bitcoin)
+
+##### FUNCIÓN LAYOUT
+
+estructura <- layout(matrix(c(1, 2,  # Primero, segundo
+                     3, 3), # y tercer gráfico
+                   nrow = 2,
+                   ncol = 2,
+                   byrow = TRUE))
+
+layout.show(estructura) 
+
+?layout
+
+
+#EJEMPLO 1
+
+estructura <- matrix(c(1, 2,  # Primero, segundo
+                3, 3),        # y tercer gráfico
+              nrow = 2, ncol = 2,
+              byrow = TRUE)
+
+layout(mat = estructura)
+
+# Datos
+
+
+
+plot(bitcoin)    # grafico izquierda arriba
+plot(eurusd) # grafico derecha arriba
+plot(ethereum)    #  gráfico abajo
+
+
+#EJEMPLO 2
+
+estructura_2 <- matrix(c(1,1,  # Primero
+                       2, 3),        # segundo y tercer gráfico
+                     nrow = 2, ncol = 2,
+                     byrow = TRUE)
+
+layout(mat = estructura_2)
+
+plot(bitcoin)    # grafico izquierda arriba
+plot(litecoin) # grafico derecha arriba
+plot(ethereum)    #  gráfico abajo
+
+## ejemplo 3
+
+estructura_3 <- matrix(c(1,2,  
+                         1, 3),       
+                       nrow = 2, ncol = 2,
+                       byrow = TRUE)
+
+layout(mat = estructura_3)
+
+
+plot(bitcoin)    # grafico izquierda arriba
+plot(litecoin) # grafico derecha arriba
+plot(ethereum) 
+
+#???Ejemplo 4 cambio anchura 
+
+estructura_4 <- matrix(c(1,2,  
+                         1, 3),       
+                       nrow = 2, ncol = 2,
+                       byrow = TRUE)
+
+layout(mat = estructura_4 ,
+       widths = c(1, 2)) # Primera y segunda columna
+
+                          # Anchos relativos
+plot(bitcoin)    # grafico izquierda arriba
+plot(litecoin) # grafico derecha arriba
+plot(ethereum) 
+
+#- Modificando la altura
+
+estructura_5 <- matrix(c(1,1,  
+                         2, 3),       
+                       nrow = 2, ncol = 2,
+                       byrow = TRUE)
+
+layout(mat = estructura_5 ,
+       heights = c(1.5, 1)) 
+
+plot(bitcoin)    # grafico izquierda arriba
+plot(hist_bitcoin) # grafico derecha arriba
+plot(hist_ret_bitcoin) 
+```
+
+
+
+ 
